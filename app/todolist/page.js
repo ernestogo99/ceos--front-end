@@ -9,44 +9,41 @@ const TodoListPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [editedTodo, setEditedTodo] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const token = localStorage.getItem('token')
-
-
-
-    useEffect(  () => {
-         axios.get('/gettask', { headers: { Authorization: `Token ${token}` } })
-            .then((response) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    
+    useEffect(() => {
+        async function getTasks() {
+            try {
+                const response = await axios.get('/gettask', { headers: { Authorization: `Token ${token}` } });
                 setTodos(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching todos:', error);
-            });
-    }, []);
+            } catch (error) {
+                console.log(error);
+            } 
+        }
+        getTasks();
+    }, [token]);
 
     const handleAddTodo = async (e) => {
         e.preventDefault();
         if (newTodo.trim() === '') return;
 
-        await axios.post('/createtask', { title: newTodo }, { headers: { Authorization: `Token ${token}` } })
-            .then((response) => {
-                setTodos([...todos, response.data]);
-                setNewTodo('');
-            })
-            .catch((error) => {
-                console.error('Error adding todo:', error);
-            });
-            
+        try {
+            const response = await axios.post('/createtask', { title: newTodo }, { headers: { Authorization: `Token ${token}` } });
+            setTodos([...todos, response.data]);
+            setNewTodo('');
+        } catch (error) {
+            console.error('Error adding todo:', error);
+        }
     };
 
     const handleDeleteTodo = async (title) => {
-        await axios.delete(`/deletetask/${title}`, { headers: { Authorization: `Token ${token}` } })
-            .then(() => {
-                const updatedTodos = todos.filter(todo => todo.title !== title);
-                setTodos(updatedTodos);
-            })
-            .catch((error) => {
-                console.error('Error deleting todo:', error);
-            });
+        try {
+            await axios.delete(`/deletetask/${title}`, { headers: { Authorization: `Token ${token}` } });
+            const updatedTodos = todos.filter(todo => todo.title !== title);
+            setTodos(updatedTodos);
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+        }
     };
 
     const handleEdit = (title) => {
@@ -58,26 +55,25 @@ const TodoListPage = () => {
     };
 
     const handleUpdateTodo = async () => {
-        await axios.put(`/updatetask/${editedTodo.title}`, { text: editedTodo.text }, { headers: { Authorization: `Token ${token}` } })
-            .then(() => {
-                const updatedTodos = [...todos];
-                const index = updatedTodos.findIndex(todo => todo.title === editedTodo.title);
-                updatedTodos[index] = { ...updatedTodos[index], text: editedTodo.text };
-                setTodos(updatedTodos);
-                setEditMode(false);
-            })
-            .catch((error) => {
-                console.error('Error updating todo:', error);
-            });
+        try {
+            await axios.put(`/updatetask/${editedTodo.title}`, { text: editedTodo.text }, { headers: { Authorization: `Token ${token}` } });
+            const updatedTodos = [...todos];
+            const index = updatedTodos.findIndex(todo => todo.title === editedTodo.title);
+            updatedTodos[index] = { ...updatedTodos[index], text: editedTodo.text };
+            setTodos(updatedTodos);
+            setEditMode(false);
+        } catch (error) {
+            console.error('Error updating todo:', error);
+        }
     };
 
     const filteredTodos = todos.filter((todo) =>
         todo && todo.text && todo.text.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
     return (
         <div className={styles.todoList}>
             <h1>Todo List</h1>
-            
             <input
                 type="text"
                 placeholder="Search..."
@@ -95,9 +91,9 @@ const TodoListPage = () => {
                 />
                 <button type="submit" className={styles.addButton}>Add</button>
             </form>
-            <ul className={styles.todoList}>
+            <div className={styles.todoListContainer}>
                 {filteredTodos.map((todo) => (
-                    <li key={todo.title} className={styles.todoItem}>
+                    <div key={todo.title} className={styles.todoItem}>
                         {editMode && editedTodo.title === todo.title ? (
                             <>
                                 <input
@@ -120,9 +116,9 @@ const TodoListPage = () => {
                                 <button onClick={() => handleDeleteTodo(todo.title)} className={styles.deleteButton}>Delete</button>
                             </>
                         )}
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };
