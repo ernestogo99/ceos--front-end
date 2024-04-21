@@ -1,0 +1,55 @@
+.todoList {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 600px;
+  }
+  
+  .todoInput {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .searchInput {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .addForm {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .addButton {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .todoItem {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    list-style: none;
+  }
+  
+  .updateButton,
+  .editButton,
+  .deleteButton {
+    margin-left: 5px;
+    padding: 3px 8px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  

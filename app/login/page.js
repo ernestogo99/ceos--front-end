@@ -23,6 +23,7 @@ const LoginPage = () => {
         { username: username, password: password } // Dados de autenticação como um único objeto
       );
 
+
       if (response.data && response.data.token) {
         localStorage.setItem('token', response.data.token);
         router.push('/todolist');
