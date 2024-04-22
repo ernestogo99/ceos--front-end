@@ -2,26 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/api.js';
 import styles from './todostyle.module.css';
+import { useRouter } from 'next/router';
 
 const TodoListPage = () => {
     const [todos, setTodos] = useState([]);
+    const [title, setTitle] = useState([]);
     const [newTodo, setNewTodo] = useState('');
     const [editMode, setEditMode] = useState(false);
-    const [editedTodo, setEditedTodo] = useState('');
+    const [editedTodo, setEditedTodo] = useState({ id: '', title: '', text: '' }); // Inicialize editedTodo corretamente
     const [searchTerm, setSearchTerm] = useState('');
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    
+
     useEffect(() => {
-        async function getTasks() {
-            try {
-                const response = await axios.get('/gettask', { headers: { Authorization: `Token ${token}` } });
-                setTodos(response.data);
-            } catch (error) {
-                console.log(error);
-            } 
-        }
-        getTasks();
-    }, [token]);
+        axios.get('/gettask', { headers: { Authorization: `Token ${token}` } })
+            .then(res => setTodos(res.data))
+            .catch(err => console.log(err));
+    }, []);
 
     const handleAddTodo = async (e) => {
         e.preventDefault();
@@ -39,85 +35,101 @@ const TodoListPage = () => {
     const handleDeleteTodo = async (title) => {
         try {
             await axios.delete(`/deletetask/${title}`, { headers: { Authorization: `Token ${token}` } });
-            const updatedTodos = todos.filter(todo => todo.title !== title);
-            setTodos(updatedTodos);
+            setTodos(prevTodos => prevTodos.filter(todo => todo.title !== title));
         } catch (error) {
             console.error('Error deleting todo:', error);
         }
+        window.location.reload();
     };
 
-    const handleEdit = (title) => {
+
+    const handleEdit = (id) => {
         setEditMode(true);
+        const todoToEdit = todos.find(todo => todo.id === id);
         setEditedTodo({
-            title,
-            text: todos.find(todo => todo.title === title).text
+            ...todoToEdit
         });
+    };
+
+
+
+    const logoff = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/login';  // Redirecione para a página de login
     };
 
     const handleUpdateTodo = async () => {
         try {
-            await axios.put(`/updatetask/${editedTodo.title}`, { text: editedTodo.text }, { headers: { Authorization: `Token ${token}` } });
-            const updatedTodos = [...todos];
-            const index = updatedTodos.findIndex(todo => todo.title === editedTodo.title);
-            updatedTodos[index] = { ...updatedTodos[index], text: editedTodo.text };
-            setTodos(updatedTodos);
+            await axios.put(`/updatetask/${editedTodo.id}`, { title: editedTodo.text }, { headers: { Authorization: `Token ${token}` } });
+            setTodos(prevTodos => prevTodos.map(todo => {
+                if (todo.id === editedTodo.id) {
+                    return { ...todo, text: editedTodo.text };
+                }
+                return todo;
+            }));
+            window.location.reload();
+
             setEditMode(false);
+            setEditedTodo({ id: '', title: '', text: '' }); // Limpe o estado editedTodo após a edição
         } catch (error) {
             console.error('Error updating todo:', error);
         }
+
     };
-
-    const filteredTodos = todos.filter((todo) =>
-        todo && todo.text && todo.text.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     return (
-        <div className={styles.todoList}>
-            <h1>Todo List</h1>
-            <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={styles.searchInput}
-            />
-            <form onSubmit={handleAddTodo} className={styles.addForm}>
+        <div className={styles.corpo}>
+            <div className={styles.todoList}>
+                <h1>Todo List</h1>
+
+                <button onClick={() => logoff()} className={styles.logoff}>Log off</button>
                 <input
                     type="text"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
-                    placeholder="Add new todo"
-                    className={styles.todoInput}
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
                 />
-                <button type="submit" className={styles.addButton}>Add</button>
-            </form>
-            <div className={styles.todoListContainer}>
-                {filteredTodos.map((todo) => (
-                    <div key={todo.title} className={styles.todoItem}>
-                        {editMode && editedTodo.title === todo.title ? (
-                            <>
-                                <input
-                                    type="text"
-                                    value={editedTodo.text}
-                                    onChange={(e) =>
-                                        setEditedTodo({
-                                            ...editedTodo,
-                                            text: e.target.value
-                                        })
-                                    }
-                                    className={styles.todoInput}
-                                />
-                                <button onClick={handleUpdateTodo} className={styles.updateButton}>Update</button>
-                            </>
-                        ) : (
-                            <>
-                                <span>{todo.text}</span>
-                                <button onClick={() => handleEdit(todo.title)} className={styles.editButton}>Edit</button>
-                                <button onClick={() => handleDeleteTodo(todo.title)} className={styles.deleteButton}>Delete</button>
-                            </>
-                        )}
-                    </div>
-                ))}
+                <form onSubmit={handleAddTodo} className={styles.addForm}>
+                    <input
+                        type="text"
+                        value={newTodo}
+                        onChange={(e) => setNewTodo(e.target.value)}
+                        placeholder="Add new todo"
+                        className={styles.todoInput}
+                    />
+                    <button type="submit" className={styles.addButton}>Add</button>
+                </form>
+                <div className={styles.todoListContainer}>
+                    {todos.map((todo) => (
+                        <div key={todo.id} className={styles.todoItem}>
+                            <div className={styles.todoText}>{todo.title}</div>
+                            {editMode && editedTodo.id === todo.id ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        value={editedTodo.text}
+                                        onChange={(e) =>
+                                            setEditedTodo({
+                                                ...editedTodo,
+                                                text: e.target.value
+                                            })
+                                        }
+                                        className={styles.todoInput}
+                                    />
+                                    <button onClick={handleUpdateTodo} className={styles.updateButton}>Update</button>
+                                </>
+                            ) : (
+                                <>
+                                    <span>{todo.text}</span>
+                                    <div className={styles.buttonsContainer}>
+                                        <button onClick={() => handleEdit(todo.id)} className={styles.editButton}>Editar</button>
+                                        <button onClick={() => handleDeleteTodo(todo.id)} className={styles.deleteButton}>Excluir</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

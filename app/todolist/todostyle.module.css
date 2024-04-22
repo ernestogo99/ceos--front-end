@@ -1,55 +1,151 @@
+@font-face {
+  font-family: 'Legacy';
+  src: url('/fonts/LeagueSpartan-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: large;
+}
+
+@font-face {
+  font-family: 'Legacy-Thin';
+  src: url('/fonts/LeagueSpartan-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: large;
+}
+
+.corpo {
+  background-color: #23242a;
+}
+
+
 .todoList {
-    margin: 0 auto;
-    padding: 20px;
-    max-width: 600px;
-  }
-  
-  .todoInput {
-    margin-right: 10px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .searchInput {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .addForm {
-    display: flex;
-    margin-bottom: 20px;
-  }
-  
-  .addButton {
-    padding: 5px 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .todoItem {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    list-style: none;
-  }
-  
-  .updateButton,
-  .editButton,
-  .deleteButton {
-    margin-left: 5px;
-    padding: 3px 8px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-  }
-  
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 600px;
+  background-color: #23242a;
+  /* Altera a cor de fundo */
+}
+
+.todoList h1 {
+  font-family: 'Legacy';
+  font-size: 50px;
+  text-align: center;
+  /* Centraliza o texto */
+  margin: 0 auto;
+  padding: 20px;
+  color: #fff;
+  /* Define a cor do texto como branco */
+}
+
+.todoInput {
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: black;
+}
+
+.searchInput {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.addForm {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.addButton {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.todoItem {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: black;
+  border-radius: 5px;
+  list-style: none;
+}
+
+.updateButton,
+.editButton,
+.deleteButton {
+  margin-left: 5px;
+  padding: 3px 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.todoItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  list-style: none;
+}
+
+.todoText {
+  flex-grow: 1;
+  /* Faz o texto do todo ocupar o espaço restante */
+}
+
+.buttonsContainer {
+  display: flex;
+}
+
+.editButton,
+.deleteButton {
+  padding: 3px 8px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: 5px;
+  /* Adiciona espaço entre os botões */
+}
+
+.searchInput {
+  display: none;
+}
+
+.editButton:hover,
+.updateButton:hover,
+.deleteButton:hover {
+  background-color: #0056b3;
+  /* Altera a cor do botão quando hover */
+}
+
+.logoff {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Legacy';
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.logoff.addButton {
+  background-color: #c82333;
+}
